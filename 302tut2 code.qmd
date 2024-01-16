@@ -1,0 +1,63 @@
+---
+title: "minipaper2-opendatatoronto"
+author: "Yichen Ji (Selina)"
+format: html
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+#install.packages("opendatatoronto")
+```
+
+
+```{r}
+library(dplyr)
+library(knitr)
+library(opendatatoronto)
+library(tidyverse)
+library(purrr)
+library(ggplot2)
+packages <- list_packages(limit = 10)
+
+ttc_packages <- search_packages("ttc")
+
+ttc_delay_packages <- search_packages("TTC Subway Delay")
+
+ttc_delay_resources <- ttc_delay_packages %>%
+  list_package_resources()
+
+ttc_delay_statistics <- ttc_delay_resources %>%
+  slice(5) %>%
+  get_resource()
+
+ttc_tibble <- map_dfr(ttc_delay_statistics, ~tibble(
+  station = .x$Station,
+  code = .x$Code,
+  min_delay = .x$`Min Delay`
+))
+
+ttc_tibble
+
+ttc_tibble%>%filter(min_delay > 0)
+
+station_delays <- ttc_tibble%>%
+  group_by(code) %>%
+  summarise(Delay_Count = n())%>%
+  ungroup() %>%
+  top_n(10, Delay_Count) %>%
+  arrange(Delay_Count)
+
+# Plot the histogram
+ggplot(station_delays, aes(x = reorder(code, Delay_Count), y = Delay_Count)) +
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(title = "Number of Delays per Station", x = "Station", y = "Number of Delays")
+```
+
