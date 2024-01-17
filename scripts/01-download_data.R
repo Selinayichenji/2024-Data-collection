@@ -20,7 +20,6 @@ homeless_death_packages
 homeless_death_resources <- homeless_death_packages %>%
   list_package_resources()
 
-homeless_death_resources 
 
 homeless_death_statistics <- homeless_death_resources  %>%
   slice(6) %>%
@@ -31,6 +30,5 @@ homeless_death_statistics
 
 
 #### Save data ####
-# [...UPDATE THIS...]
-# change the_raw_data to whatever name you assigned when you downloaded it.
-write_csv(homeless_death_statistics, "inputs/data/raw_data.csv") 
+write_csv(homeless_death_statistics, "inputs/data/Homeless_death_by_cause.csv") 
+
