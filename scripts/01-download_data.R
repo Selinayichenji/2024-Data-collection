@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: Simulates homeless's death causes by its social factors
+# Purpose: Download data from opendatatoronto package
 # Author: Yichen Ji
 # Date: 17 February 2023
 # Contact: yic.ji@mail.utoronto.ca
