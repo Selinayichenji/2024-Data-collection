@@ -39,5 +39,17 @@ simulated_data<-tibble(id,Year,Cause_of_death,Age,Gender)
  
 simulated_data
 
+setequal(unique(simulated_data$Cause_of_death), c("Accident","Cancer","Cardiovascular Disease",
+                                                  "COVID-19","Drug Toxicity","Homicide","Suicide",
+                                                  "Pneumonia","Unknown/Pending","Others"))
+
+simulated_data$Cause_of_death |>
+  unique() |>
+  length() == 10
+
+simulated_data$Year |> min() == 2017
+simulated_data$Year |> max() == 2023
+simulated_data$Age |> class() == "character"
+
 
 

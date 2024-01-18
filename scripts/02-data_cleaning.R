@@ -14,16 +14,18 @@ library(dplyr)
 library(janitor)
 #### Clean data ####
 raw_data <- read_csv("inputs/data/Homeless_death_by_cause.csv")
-raw_data
+
 raw_repeated <- raw_data %>% ungroup() %>% slice(rep(row_number(), Count))
-raw_repeated
 
 cleaned_data <-
   raw_repeated |>
-  janitor::clean_names() 
-raw_repeated <- raw_repeated %>% select(-Count)%>%
-  rename(X_id = id)
-raw_repeated
+  janitor::clean_names()|>
+  rename(id = x_id)|>
+  select(-count)
+
+cleaned_data$id <-1:nrow(cleaned_data)
+
+
 #### Save data ####
 write_csv(cleaned_data, "outputs/data/analysis_data.csv")
 
