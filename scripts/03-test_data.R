@@ -14,14 +14,14 @@ library(tidyverse)
 #### Test data ####
 test_data<-read_csv("outputs/data/analysis_data.csv")
 
-setequal(unique(test_data$Cause_of_death), c("Accident","Cancer","Cardiovascular Disease",
+setequal(unique(test_data$cause_of_death), c("Accident","Cancer","Cardiovascular Disease",
                                                   "COVID-19","Drug Toxicity","Homicide","Suicide",
-                                                  "Pneumonia","Unknown/Pending","Others"))
-
-test_data$Cause_of_death |>
+                                                  "Pneumonia","Unknown/Pending","Other"))
+unique(test_data$cause_of_death)
+test_data$cause_of_death |>
   unique() |>
   length() == 10
 
-test_data$year |> min() == 2017
-test_data$year |> max() == 2023
-test_data$age |> class() == "character"
+test_data$year_of_death |> min() == 2017
+test_data$year_of_death  |> max() == 2023
+test_data$age_group |> class() == "character"

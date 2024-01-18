@@ -1,0 +1,107 @@
+---
+title: "What influences the Death "
+subtitle: "My subtitle if needed"
+author: 
+  - Yichen Ji
+thanks: "Code and data are available at: https://github.com/Selinayichenji/2024-Data-collection.git."
+date: today
+date-format: long
+abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+format: pdf
+number-sections: true
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(palmerpenguins)
+```
+
+
+# Introduction
+
+You can and should cross-reference sections and sub-sections. 
+
+The remainder of this paper is structured as follows. @sec-data....
+
+
+
+# Data {#sec-data}
+
+Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+
+```{r, echo = FALSE}
+#| label: fig-bills
+#| fig-cap: Bills of penguins
+#| echo: false
+#install.packages("scales")
+library(knitr)
+library(scales)
+library(kableExtra)
+
+total_individuals <- nrow(census_data)
+
+children_number_census <- census_data %>%
+  group_by(gender) %>%
+  summarise(
+    Total_Number = n(),
+    Ratio_to_Total = percent(n()/total_individuals, accuracy = 0.01)
+  ) %>%
+  ungroup()
+
+children_number_census %>%
+  kable("latex", booktabs = TRUE, caption = "Summary of Children Number Groups") %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+```
+
+Talk more about it.
+
+And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+
+```{r}
+#| label: fig-planes
+#| fig-cap: Relationship between wing length and width
+#| echo: false
+#| warning: false
+#| message: false
+
+analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
+
+analysis_data |> 
+  ggplot(aes(x = width, y = length)) +
+  geom_point(alpha = 0.8) +
+  theme_minimal() +
+  labs(x = "Wing width (mm)",
+       y = "Wing length (mm)")
+```
+
+Talk way more about it. 
+
+
+
+# Discussion
+
+## First discussion point {#sec-first-point}
+
+If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+
+## Second discussion point
+
+## Third discussion point
+
+## Weaknesses and next steps
+
+Weaknesses and next steps should also be included.
+
+
+\newpage
+
+
+# References
+
+
