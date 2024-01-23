@@ -1,102 +1,394 @@
 ---
-title: "What influences the Death "
-subtitle: "My subtitle if needed"
+title: "How the COVID-19 pandemic influenced the Death of Homeless people in Toronto? Drugs became the major reason"
+subtitle: "Examining Trends in Age, Gender, and Causes of Death Among Toronto's Homeless Population from 2017 to 2023"
 author: 
   - Yichen Ji
 thanks: "Code and data are available at: https://github.com/Selinayichenji/2024-Data-collection.git."
-date: today
+date: "`r format(Sys.time(), '%d %B %Y')`"
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "By using 8 figures to analysis the data of homeless's death from 2017 to 2023, it was found that the major reason for increased death of homeless people during the Pandemic in Toronto was drug, instead of the COVID-19 itself. Only positioning the right problem enables us to take appropriate and efficient actions to help homeless people."
 format: pdf
 number-sections: true
 bibliography: references.bib
+#code referenced from posit community: https://community.rstudio.com/t/force-table-placement/149954
+header-includes:
+      - \usepackage{float}
+      - \floatplacement{table}{H}
+
 ---
 
-```{r}
+```{r setup, include = FALSE}
+
 #| include: false
 #| warning: false
 #| message: false
 
 library(tidyverse)
-library(palmerpenguins)
+library(opendatatoronto)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+#print(citation("tidyr"), bibtex=TRUE)
+analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
 ```
 
 
 # Introduction
 
-You can and should cross-reference sections and sub-sections. 
+In recent decades, Toronto has witnessed an increasingly visible homelessness issue, with individuals seeking refuge on city streets becoming a common sight. In 2013, homeless people took 0.19% [@cite13data] of total population in Toronto, ranked the 8th city in Canada. In 2021, there was 7,347 [@citehh] homeless people in toronto and the total population was 2,794,356 [@citehh]. The percentage rose to 0.26%. This trend not only manifestated a growing societal challenge but also calling a critical need for action.
 
-The remainder of this paper is structured as follows. @sec-data....
+As [@cite13data] said, “The goal of ending homelessness is to ensure housing stability...and includes required services as needed (supportive), in addition to income and supports.” In this paper, we are trying to figure out what caused the increase death of homeless people during pandemic and what social service they needed by using R [@citeR] to analysis a dataset from opendatatoronto [@citeopendatatoronto], named "Homeless deaths by cause". And there are some limitations of this data listed on the City of Toronto Website we must know before using the data:
+"1. This data reflects only deaths that are reported to TPH by SSHA, community partners and the Coroner’s Office.
+2. Cause of death is unknown or pending in approximately 25% of the reported deaths.
+3. In 2019, TPH ceased reporting on location of death as this information is often unknown or unverified.
+4. The data does not identify Indigenous status as this is reported as unknown or missing in 70% of the reported cases. With this high a percentage of missing information, accurate conclusions cannot be drawn, as such, it is standard epidemiological practice to suppress the release of data.
+5. Cause of death for transgender people not shown due to small counts.
+6. Cause of death is unknown in approximately 25% of the reports. To protect privacy, causes of death with less than 2% of the cases are included in the other category." [@citecot]
 
+Through tables, plot graphs and bar graphs, our findings reveal a huge increase in deaths attributed to drug use during the pandemic, overshadowing even COVID-19 as a direct cause of death. This suggests a secondary crisis unfolding within the pandemic period.The precise reasons behind this appearance remain ambiguous and subject to further professional research, several hypotheses have been proposed. Dr.Hwang observed, '“The disruption caused by the lockdown and by the real lack of availability of services caused people to change where they spend time and thus where they use drugs,” ... “I think that contributed to people using in higher risk situations that would more likely result in death.”'[@citenews]. The experience may prove beneficial for the charity's work with homeless individuals, particularly when critical times such as a pandemic come in the future.
+
+The remainder of this paper is structured as follows: @sec-data introduces the data set, uses tables and figures to analysis it, and tells a story about homeless people's death during pandemic period. @sec-conclu concludes the findings of data and provide a consultation for further thinking.
 
 
 # Data {#sec-data}
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+## Data source and background
 
-```{r, echo = FALSE}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
-#install.packages("scales")
-library(knitr)
-library(scales)
-library(kableExtra)
+The data used through this paper was provided by the City of Toronto's OpenDataToronto Library, was a cvs file named "Homeless deaths by cause", under the category "Deaths of People Experiencing Homelessness". The homelessness is defined as “the situation of an individual or family without stable, permanent, appropriate housing, or the immediate prospect, means and ability of acquiring it”[@citecot]. We retrieved the data from R package opendatatoronto[@citeopendatatoronto].We downloaded the data, cleaned it and renamed it as "analysis_data" in output/datam folder.
 
-total_individuals <- nrow(census_data)
+The data was measured and collected by Toronto Public Health (TPH), Support and Housing Administration (SSHA) and the Office of the Chief Coroner of Ontario (OCCO) since January 2017. The TPH tracked the deaths of homeless people to get accurate estimate of their number and causes of death. The TPH also leads the data collection, analysis and reporting. The SSHA and health and social service agencies that support homeless people share information about a death with TPH and the OCCO verifies some of the data. [@citecot]
 
-children_number_census <- census_data %>%
-  group_by(gender) %>%
-  summarise(
-    Total_Number = n(),
-    Ratio_to_Total = percent(n()/total_individuals, accuracy = 0.01)
-  ) %>%
-  ungroup()
+### Variables of interest
 
-children_number_census %>%
-  kable("latex", booktabs = TRUE, caption = "Summary of Children Number Groups") %>%
-  kable_styling(latex_options = c("striped", "hold_position"))
-```
-```
+Our population is divided by 4 categories: Year of death, Gender, Age group and Cause of death. The year of death covers form 2017 to 2023. The gender category has 3 types: Female, Male and Unknown. Age groups are divided as below: Under 20, 20-39,40-59,60+ and Unknown.Causes of death includes 10 types below: Accident, Cancer, Cardiovascular Disease, COVID-19, Drug Toxicity, Homicide, Other, Pneumonia, Suicide and Unknown/Pending.
 
-Talk more about it.
+### Data processing
 
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+We used `R`[@citeR] to process the whole paper, packages include `tidyverse`[@citetdv], `dplyr`[@citedpr], `tidyr`[@citetdr], `knitr`[@citeknr], `kableExtra`[@citekable] and `ggplot2`[@citegg2].
+
+We cleaned the data by cancelling the Count	column, which represents the number of deaths in the specified category[@citecot]. For the convenience of counting specific population group, we copied the particular line a couple of times according to the number in the count. And all characters in columns' names were transformed into lowcase.
+
+## Sample of cleaned analysis data
+
+Here is the sample of cleaned data.
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| label: tbl-glimpse
+#| tbl-cap: Sample of Data
 #| echo: false
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
-
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
+sample_data<-head(analysis_data, 10)
+kable(sample_data, format = "latex", booktabs = TRUE)%>%
+  kable_styling(position = 'center')
 ```
 
-Talk way more about it. 
+\newpage
+## Summarized analysis data
+
+Then there are basic distributions of population in gender, age and causes of death.
+
+```{r}
+#| label: tbl-gender-organize
+#| tbl-cap: Gender Distribution by Year
+#| echo: false
+#| warning: false
+#| message: false
+
+# Calculate the yearly gender counts
+yearly_gender_counts <- analysis_data %>%
+  group_by(year_of_death, gender) %>%
+  summarise(count = n(), .groups = 'drop')
+
+# Reshape to a wide format
+gender_data_wide <- yearly_gender_counts %>%
+  pivot_wider(names_from = gender, values_from = count, values_fill = list(count = 0))
+
+# Add a sum row for each year
+gender_data_wide <- gender_data_wide %>%
+  rowwise() %>%
+  mutate(Sum = sum(c(Male, Female, Unknown), na.rm = TRUE))
+
+# Calculate the sum of every row
+totals <- colSums(gender_data_wide[, c("Female", "Male", "Unknown", "Sum")], na.rm = TRUE)
+
+totals <- as.list(totals)
+gender_data_wide$year_of_death <- as.character(gender_data_wide$year_of_death)
+
+final_data <- gender_data_wide %>%
+  add_row(year_of_death = "Total", Female = totals$Female, Male = totals$Male, Unknown = totals$Unknown, Sum = totals$Sum)
+
+# Render final data with kable
+final_data %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped"))
+
+```
+
+The table referenced as @tbl-gender-organize presents the distribution of deaths by gender among the homeless population among seven years. The 'Sum' column represents the annual total of deaths, aggregating the figures across all gender categories. According to @tbl-gender-organize, males was the majority of the recorded deaths, with a total of 731 instances, which is approximately 78% of the aggregate mortality count for the period in question. In contrast, the female death toll is roughly a third of the male figure. The data also include the Unknown category, amounting to only 12, which is negligible in the overall context.
 
 
+```{r}
+#| label: tbl-age-organize
+#| tbl-cap: Age Distribution by Year
+#| echo: false
+#| warning: false
+#| message: false
+# Calculate the yearly gender counts
+yearly_age_counts <- analysis_data %>%
+  group_by(year_of_death, age_group) %>%
+  summarise(count = n(), .groups = 'drop')
 
-# Discussion
+# Reshape to a wide format
+age_data_wide <- yearly_age_counts %>%
+  pivot_wider(names_from = age_group, values_from = count, values_fill = list(count = 0))
 
-## First discussion point {#sec-first-point}
+# Calculate total amount of each gender
+total_age_counts <- analysis_data %>%
+  group_by(age_group) %>%
+  summarise(Total = n(), .groups = 'drop')
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+# Switch row and column
+total_age_wide <- total_age_counts %>%
+  pivot_wider(names_from = age_group, values_from = Total, values_fill = list(Total = 0))
 
-## Second discussion point
+# Add a 'Total' identifier in the year_of_death column for joining
+total_age_wide <- total_age_wide %>%
+  mutate(year_of_death = "Total")
 
-## Third discussion point
+#Ensure we combine the same type row
+age_data_wide$year_of_death <- as.character(age_data_wide$year_of_death)
+total_age_wide$year_of_death <- as.character(total_age_wide$year_of_death)
 
-## Weaknesses and next steps
+# Combine the yearly data with the totals
+final_data <- bind_rows(age_data_wide, total_age_wide)
 
-Weaknesses and next steps should also be included.
+final_data %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped"))
+
+```
+
+The data outlined in @tbl-age-organize indicates that individuals aged 40-59 accounted for the highest number of deaths, totaling 387 cases. The group of individuals under 20 years old experienced the fewest deaths, with only 9 reported cases. The death counts for the age groups "20-39" and "60+" were comparable, with 240 and 260 deaths respectively. Both the "20-39" and "40-59" age groups saw their highest death number in 2021, while the "60+" and "Unknown" age categories reached their peak in 2022. As for the youngest group, those under 20 years old, there were equally high numbers of deaths in both 2021 and 2022, with each year only 3 instances.
+
+By analyzing sum column in @tbl-gender-organize, we can see a clear trend in 7 years. The death number decreased one year from 2017 to 2018, then quickly increasing from 2018 to 2022 and peaked at 2022, the yearly death observations went over 200, and then started to fall down to under 80 in 2023. 
+
+The timeline in @tbl-gender-organize and @tbl-age-organize overlaps time range of COVID-19. Since age and gender did not seem to influence the death number a lot, We can conjecture that maybe the death of homeless lead by the COVID-19 pandemic. To check our hypothesis, we need to look the statistics of trend of causes of death.
+
+```{r}
+#| label: tbl-cause-organize
+#| tbl-cap: Death Causes Distribution by Year - first half
+#| echo: false
+#| warning: false
+#| message: false
+
+death_cause_counts <- analysis_data %>%
+  group_by(year_of_death, cause_of_death) %>%
+  summarise(count = n(), .groups = 'drop')
+
+cause_data_wide <- death_cause_counts %>%
+  pivot_wider(names_from = cause_of_death, values_from = count, values_fill = list(count = 0))
+
+
+total_cause_counts <- analysis_data %>%
+  group_by(cause_of_death) %>%
+  summarise(Total = n(), .groups = 'drop')
+total_cause_wide <- total_cause_counts %>%
+  pivot_wider(names_from = cause_of_death, values_from = Total, values_fill = list(Total = 0))
+
+
+total_cause_wide <- total_cause_wide %>%
+  mutate(year_of_death = "Total")
+
+
+#Ensure we combine the same type row
+cause_data_wide$year_of_death <- as.character(cause_data_wide$year_of_death)
+total_cause_wide$year_of_death <- as.character(total_cause_wide$year_of_death)
+
+# Combine the yearly data with the totals
+final_data_2 <- bind_rows(cause_data_wide, total_cause_wide)
+
+# Divide our format into 2 parts in order to ensure the content fits within the PDF page.
+# Divide at the fifth column
+first_half <- final_data_2[, 1:5]
+
+
+# Build format for each part
+first_half %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped"))
+```
+
+```{r}
+#| label: tbl-cause-organize-2
+#| tbl-cap: Death Causes Distribution by Year - second half
+#| echo: false
+#| warning: false
+#| message: false
+second_half <- final_data_2[, c(1, 6:ncol(final_data_2))]
+second_half %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped")) 
+
+```
+As indicated by @tbl-cause-organize and @tbl-cause-organize-2, drug toxicity emerged as the predominant cause of death among the homeless, accounting for nearly half of all homeless people. The highest data was recorded in 2021. Within a total of 949 cases, the causes of death for approximately 20%, or 208 individuals, remained unknown. Cardiovascular diseases ranked third with 95 deaths, experiencing a sharp increase to a peak of 22 in 2022, before dramatically dropping to just one in 2023. The least homeless people death were attributed to COVID-19, with only 8 cases, half of which occurred at the pandemic's outset in 2020. Other causes resulted in the deaths of 20 to 60 individuals.
+
+These findings suggest that COVID-19 was not the direct cause of the marked increase in homeless deaths; it may have indirectly influenced death rates through a rise in drug toxicity and cardiovascular disease-related deaths. To evaluate the secondary hypothesis regarding other variables that could affect causes of death, it is necessary to examine the correlations between gender, age, and causes of death through visual analysis.
+
+## Visualization
+
+### Visual 1
+
+```{r}
+#| label: fig-gender-in-deathcauses
+#| fig-cap: Correlation between gender and 10 causes of death
+#| echo: false
+#| warning: false
+#| message: false
+gender_death <- analysis_data %>%
+  ggplot(mapping = aes(x = cause_of_death, fill = gender)) +
+  geom_bar() +
+  labs(x = "Causes of death", y = "Number of observations", fill = "Gender") +
+  theme(legend.position = "bottom",
+        legend.title = element_text(size = 10),
+        axis.text.x = element_text(size = 7, angle = 45, hjust = 1))
+
+gender_death
+```
+
+As depicted in @fig-gender-in-deathcauses, the distribution of the three gender categories across 10 causes of death does not show a distinct pattern. Drug toxicity remains the leading cause for both genders, while COVID-19 has the least impact. For other causes, the ratio of female to male deaths remains at about 1:3, as shown on the @tbl-gender-organize.
+
+### Visual 2
+
+```{r}
+#| label: fig-age-in-deathcauses
+#| fig-cap: Correlation between age group and 10 causes of death
+#| echo: false
+#| warning: false
+#| message: false
+age_death <- analysis_data %>%
+  ggplot(mapping = aes(x = age_group, fill = cause_of_death)) +
+  geom_bar() +
+  scale_fill_discrete(labels = c("Accident", "Cancer", "Cardiovascular\nDisease", "COVID-19","Drug Toxicity", "Homicide", "Other", "Pneumonia", "Suicide", "Unknown/\nPending")) +
+  labs(x = "Age group", y = "Number of observations", fill = "Age group") +
+  theme(legend.position = "bottom", #set labels under the figure
+        legend.key.size = unit(0.5, 'cm'),
+        legend.title = element_text(size = 10),# Adjust labels' size
+        legend.text = element_text(size = 7)) 
+age_death
+
+```
+
+@fig-age-in-deathcauses presents the relationship between age and causes of death. The under-20 age group is too small for meaningful analysis, and the unknown age group's data is inconclusive due to the absence of identifiable patterns between age and cause of death, with most causes also unidentified. Therefore, the analysis focuses on the age groups 20-39, 40-59, and 60+.
+
+Notably, the distribution of death causes varies significantly across age groups. For those aged 20-39 and 40-59, drug toxicity is the main cause of death. In older age groups, an increased proportion of deaths is attributed to unspecified causes, cancer, and cardiovascular diseases, with the latter being the predominant cause of death among those over 60. The share of drug toxicity-related deaths in this group is less than 25%.
+
+Comparing the correlations between age and cause of death to gender and cause of death, age appears to have a stronger correlation with death causes. Consequently, the analysis has shifted focus to the temporal trends across the three age categories.
+\newpage
+
+### Visual 3
+
+```{r}
+#| label: fig-20-39group-deathcause-change
+#| fig-cap: Correlation between age and 10 causes of death part1
+#| echo: false
+#| warning: false
+#| message: false
+
+above20_causes <- analysis_data %>%
+  filter(age_group == "20-39") %>%
+  group_by(year_of_death, cause_of_death) %>%
+  summarise(deaths = n(), .groups = 'drop')
+
+above20_time_plot <- ggplot(above20_causes, aes(x = year_of_death, y = deaths, color = cause_of_death, group = cause_of_death)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, NA))+
+  scale_color_discrete(labels = c("Accident", "Cancer", "Cardiovascular\nDisease",
+                                  "Drug Toxicity", "Homicide", "Other", "Pneumonia",
+                                  "Suicide", "Unknown/\nPending")) +
+  labs(x = "Year of Death",
+       y = "Number of Deaths",
+       color = "Cause of Death") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 10),)
+  
+above20_time_plot 
+```
+
+```{r}
+#| label: fig-40-59group-deathcause-change
+#| fig-cap: Correlation between age and 10 causes of death part2
+#| echo: false
+#| warning: false
+#| message: false
+
+above40_causes <- analysis_data %>%
+  filter(age_group == "40-59") %>%
+  group_by(year_of_death, cause_of_death) %>%
+  summarise(deaths = n(), .groups = 'drop')
+
+above40_time_plot <- ggplot(above40_causes, aes(x = year_of_death, y = deaths, color = cause_of_death, group = cause_of_death)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, NA))+
+  scale_color_discrete(labels = c("Accident", "Cancer", "Cardiovascular\nDisease", "COVID-19",
+                                  "Drug Toxicity", "Homicide", "Other", "Pneumonia",
+                                  "Suicide", "Unknown/\nPending")) +
+  labs(x = "Year of Death",
+       y = "Number of Deaths",
+       color = "Cause of Death") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 7),
+        plot.title = element_text(size = 12),
+        legend.title = element_text(size = 9))
+  
+above40_time_plot
+```
+
+```{r}
+#| label: fig-60group-deathcause-change
+#| fig-cap: Correlation between age and 10 causes of death part3
+#| echo: false
+#| warning: false
+#| message: false
+
+plus60_causes <- analysis_data %>%
+  filter(age_group == "60+") %>%
+  group_by(year_of_death, cause_of_death) %>%
+  summarise(deaths = n(), .groups = 'drop')
+
+plus60_time_plot <- ggplot(plus60_causes , aes(x = year_of_death, y = deaths, color = cause_of_death, group = cause_of_death)) +
+  geom_line() +
+  scale_y_continuous(limits = c(0, NA))+
+  scale_color_discrete(labels = c("Accident", "Cancer", "Cardiovascular\nDisease", "COVID-19",
+                                  "Drug Toxicity", "Homicide", "Other", "Pneumonia",
+                                  "Suicide", "Unknown/\nPending")) +
+  labs(x = "Year of Death",
+       y = "Number of Deaths",
+       color = "Cause of Death") +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 7),
+        legend.title = element_text(size = 9))
+  
+plus60_time_plot
+```
+
+Both @fig-20-39group-deathcause-change and @fig-40-59group-deathcause-change reveal a striking increase in deaths due to drug toxicity from 2017 to 2021, peaking in that year before declining. The peak figures for drug toxicity are roughly four to five times higher than those for other causes, with about 50 cases in the 20-39 age group and over 60 in the 40-59 age group, while other causes remained below 10 in 2021. A slight difference exists, with the 40-59 age group exhibiting a higher number of unknown causes deaths.
+
+Oppositely, for those aged over 60, on the @fig-60group-deathcause-change, the number of deaths due to drug toxicity and unspecified causes decreased in 2021 but rose again in 2022. Deaths from cancer followed a similar pattern, peaking in 2022, thus forming an "M"-shaped trend. Cardiovascular disease-related deaths continued to rise, with the last count in 2022. Deaths from all other causes did not exceed five.
+
+\newpage
+# Conclusion {#sec-conclu}
+
+In conclusion, our data analysis uncovers a distinct trend and points to potential factors behind the increase in drug toxicity-related deaths among Toronto's homeless population from 2017 to 2023. The evidence, drawn from @tbl-gender-organize, @fig-20-39group-deathcause-change, @fig-40-59group-deathcause-change, and @fig-60group-deathcause-change, shows a sharp rise in death among the young and middle-aged homeless segments. In contrast, the older homeless population appears to be less affected by drug-related issues, with cardiovascular disease being their leading cause of mortality. While our data does not provide evidence of the underlying causes of these trends, experts have speculated that the lockdowns may have compelled individuals to use drugs in risker and stranger circumstances, potentially leading to higher death number related to drug toxicity. [@citenews]
+
+
 
 
 \newpage

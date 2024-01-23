@@ -1,21 +1,88 @@
 ---
 title: "minipaper2-opendatatoronto"
 author: "Yichen Ji (Selina)"
-format: html
+format: pdf
 ---
+```{r setup, include = FALSE}
 
+#| include: false
+#| warning: false
+#| message: false
 
-testestestestes
-## Quarto
+library(tidyverse)
+library(opendatatoronto)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(bookdown)
+#print(citation("tidyr"), bibtex=TRUE)
+#install.packages("bookdown")
+analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+```
 
 ```{r}
-#install.packages("opendatatoronto")
+#| message: false
+#| echo: false
+#| label: tbl-gender-organize
+#| tbl-cap: Gender Distribution by Year
+
+# Calculate the yearly gender counts
+yearly_gender_counts <- analysis_data %>%
+  group_by(year_of_death, gender) %>%
+  summarise(count = n(), .groups = 'drop')
+
+# Reshape to a wide format
+gender_data_wide <- yearly_gender_counts %>%
+  pivot_wider(names_from = gender, values_from = count, values_fill = list(count = 0))
+
+# Add a sum row for each year
+gender_data_wide <- gender_data_wide %>%
+  rowwise() %>%
+  mutate(Sum = sum(c(Male, Female, Unknown), na.rm = TRUE))
+
+# Calculate the sum of every row
+totals <- colSums(gender_data_wide[, c("Female", "Male", "Unknown", "Sum")], na.rm = TRUE)
+
+totals <- as.list(totals)
+gender_data_wide$year_of_death <- as.character(gender_data_wide$year_of_death)
+
+final_data <- gender_data_wide %>%
+  add_row(year_of_death = "Total", Female = totals$Female, Male = totals$Male, Unknown = totals$Unknown, Sum = totals$Sum)
+
+# Render final data with kable
+final_data %>%
+  kable(format = "latex", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped"))
+
+```
+
+
+
+@fig-causeofdeathin-years
+
+
+```{r}
+#| label: fig-causeofdeathin-years
+#| fig-cap: Trend of causes of death from 2017 to 2023
+#| echo: false
+#| warning: false
+#| message: false
+analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
+f1 <- analysis_data %>%
+  count(year_of_death, cause_of_death) %>%
+  ggplot(mapping = aes(x = year_of_death, y = n, group = cause_of_death, color = cause_of_death)) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = "Year", y = "Number of deaths", color = "Cause of death") +
+  theme(legend.position = "bottom",
+          legend.key.size = unit(0.5, 'cm'), # Adjust labels' size
+        legend.text = element_text(size = 6)) 
+
+f1
+
 ```
 
 
@@ -61,9 +128,5 @@ ggplot(station_delays, aes(x = reorder(code, Delay_Count), y = Delay_Count)) +
   geom_col() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   labs(title = "Number of Delays per Station", x = "Station", y = "Number of Delays")
-```
-
-```{r}
-library(reprex)
 ```
 
