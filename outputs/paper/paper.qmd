@@ -50,9 +50,6 @@ As [@cite13data] said, “The goal of ending homelessness is to ensure housing s
 
 Through tables, plot graphs and bar graphs, our findings reveal a huge increase in deaths attributed to drug use during the pandemic, overshadowing even COVID-19 as a direct cause of death. This suggests a secondary crisis unfolding within the pandemic period.The precise reasons behind this appearance remain ambiguous and subject to further professional research, several hypotheses have been proposed. Dr.Hwang observed, '“The disruption caused by the lockdown and by the real lack of availability of services caused people to change where they spend time and thus where they use drugs,” ... “I think that contributed to people using in higher risk situations that would more likely result in death.”'[@citenews]. The experience may prove beneficial for the charity's work with homeless individuals, particularly when critical times such as a pandemic come in the future.
 
-The remainder of this paper is structured as follows: @sec-data introduces the data set, uses tables and figures to analysis it, and tells a story about homeless people's death during pandemic period. @sec-conclu concludes the findings of data and provide a consultation for further thinking.
-
-
 # Data {#sec-data}
 
 ## Data source and background
@@ -87,7 +84,6 @@ kable(sample_data, format = "latex", booktabs = TRUE)%>%
   kable_styling(position = 'center')
 ```
 
-\newpage
 ## Summarized analysis data
 
 Then there are basic distributions of population in gender, age and causes of death.
