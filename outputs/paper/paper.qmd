@@ -1,12 +1,12 @@
 ---
-title: "How the COVID-19 pandemic influenced the Death of Homeless people in Toronto? Drugs became the major reason"
+title: "Investigating the Effect of COVID-19 to the Death of Homeless People in Toronto from 2017 to 2023"
 subtitle: "Examining Trends in Age, Gender, and Causes of Death Among Toronto's Homeless Population from 2017 to 2023"
 author: 
   - Yichen Ji
 thanks: "Code and data are available at: https://github.com/Selinayichenji/2024-Data-collection.git."
 date: "`r format(Sys.time(), '%d %B %Y')`"
 date-format: long
-abstract: "By using 8 figures to analysis the data of homeless's death from 2017 to 2023, it was found that the major reason for increased death of homeless people during the Pandemic in Toronto was drug, instead of the COVID-19 itself. Only positioning the right problem enables us to take appropriate and efficient actions to help homeless people."
+abstract: "This study investigated mortality trends among Toronto's homeless population from 2017 to 2023. The findings suggest that the primary contributor to the elevated mortality rate during the pandemic was drug toxicity, rather than COVID-19. The objective of this research is to accurately identify the pressing issues and facilitate effective assistance for the homeless community."
 format: pdf
 toc: true
 number-sections: true
@@ -38,9 +38,11 @@ analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
 
 # Introduction
 
-In recent decades, Toronto has witnessed an increasingly visible homelessness issue, with individuals seeking refuge on city streets becoming a common sight. In 2013, homeless people took 0.19% [@cite13data] of total population in Toronto, ranked the 8th city in Canada. In 2021, there was 7,347 [@citehh] homeless people in toronto and the total population was 2,794,356 [@citehh]. The percentage rose to 0.26%. This trend not only manifestated a growing societal challenge but also calling a critical need for action.
+In recent decades, Toronto has witnessed an increasingly visible homelessness issue, with individuals seeking refuge on city streets becoming a common sight. In 2013, homeless people took 0.19% [@cite13data] of total population in Toronto, ranked the 8th city in Canada. In 2021, there was 7,347 [@citehh] homeless people in toronto and the total population was 2,794,356 [@citehh]. The percentage rose to 0.26%. This trend not only highlights a growing societal challenge but also underscores an urgent need for action.
 
-As [@cite13data] said, “The goal of ending homelessness is to ensure housing stability...and includes required services as needed (supportive), in addition to income and supports.” In this paper, we are trying to figure out what caused the increase death of homeless people during pandemic and what social service they needed by using R [@citeR] to analysis a dataset from opendatatoronto [@citeopendatatoronto], named "Homeless deaths by cause". And there are some limitations of this data listed on the City of Toronto Website we must know before using the data:
+As [@cite13data] said, “The goal of ending homelessness is to ensure housing stability...and includes required services as needed (supportive), in addition to income and supports.” In this paper, we are trying to figure out what caused the increase death of homeless people during pandemic in order to provide social service they needed by using R [@citeR] to analysis a dataset from opendatatoronto [@citeopendatatoronto], named "Homeless deaths by cause". 
+
+And there are some limitations of this data listed on the City of Toronto Website we must know before using the data:
 "1. This data reflects only deaths that are reported to TPH by SSHA, community partners and the Coroner’s Office.
 2. Cause of death is unknown or pending in approximately 25% of the reported deaths.
 3. In 2019, TPH ceased reporting on location of death as this information is often unknown or unverified.
@@ -58,31 +60,13 @@ The data used through this paper was provided by the City of Toronto's OpenDataT
 
 The data was measured and collected by Toronto Public Health (TPH), Support and Housing Administration (SSHA) and the Office of the Chief Coroner of Ontario (OCCO) since January 2017. The TPH tracked the deaths of homeless people to get accurate estimate of their number and causes of death. The TPH also leads the data collection, analysis and reporting. The SSHA and health and social service agencies that support homeless people share information about a death with TPH and the OCCO verifies some of the data. [@citecot]
 
-### Variables of interest
+## Variables of interest
 
 Our population is divided by 4 categories: Year of death, Gender, Age group and Cause of death. The year of death covers form 2017 to 2023. The gender category has 3 types: Female, Male and Unknown. Age groups are divided as below: Under 20, 20-39,40-59,60+ and Unknown.Causes of death includes 10 types below: Accident, Cancer, Cardiovascular Disease, COVID-19, Drug Toxicity, Homicide, Other, Pneumonia, Suicide and Unknown/Pending.
 
-### Data processing
+## Data processing
 
 We used `R`[@citeR] to process the whole paper, packages include `tidyverse`[@citetdv], `dplyr`[@citedpr], `tidyr`[@citetdr], `knitr`[@citeknr], `kableExtra`[@citekable] and `ggplot2`[@citegg2].
-
-We cleaned the data by cancelling the Count	column, which represents the number of deaths in the specified category[@citecot]. For the convenience of counting specific population group, we copied the particular line a couple of times according to the number in the count. And all characters in columns' names were transformed into lowcase.
-
-## Sample of cleaned analysis data
-
-Here is the sample of cleaned data.
-
-```{r}
-#| label: tbl-glimpse
-#| tbl-cap: Sample of Data
-#| echo: false
-#| warning: false
-#| message: false
-
-sample_data<-head(analysis_data, 10)
-kable(sample_data, format = "latex", booktabs = TRUE)%>%
-  kable_styling(position = 'center')
-```
 
 ## Summarized analysis data
 
@@ -125,7 +109,7 @@ final_data %>%
 
 ```
 
-The table referenced as @tbl-gender-organize presents the distribution of deaths by gender among the homeless population among seven years. The 'Sum' column represents the annual total of deaths, aggregating the figures across all gender categories. According to @tbl-gender-organize, males was the majority of the recorded deaths, with a total of 731 instances, which is approximately 78% of the aggregate mortality count for the period in question. In contrast, the female death toll is roughly a third of the male figure. The data also include the Unknown category, amounting to only 12, which is negligible in the overall context.
+The referenced table @tbl-gender-organize shows gender-specific mortality among the homeless over seven years. The 'Sum' column totals annual deaths, with males constituting 731 cases, or 78% of all deaths. Females accounted for about a third of male deaths, and the 'Unknown' category was minor, with 12 cases.
 
 
 ```{r}
@@ -169,11 +153,9 @@ final_data %>%
 
 ```
 
-The data outlined in @tbl-age-organize indicates that individuals aged 40-59 accounted for the highest number of deaths, totaling 387 cases. The group of individuals under 20 years old experienced the fewest deaths, with only 9 reported cases. The death counts for the age groups "20-39" and "60+" were comparable, with 240 and 260 deaths respectively. Both the "20-39" and "40-59" age groups saw their highest death number in 2021, while the "60+" and "Unknown" age categories reached their peak in 2022. As for the youngest group, those under 20 years old, there were equally high numbers of deaths in both 2021 and 2022, with each year only 3 instances.
+@tbl-age-organize reveals the 40-59 age bracket had the highest mortality at 387, while under-20s had the fewest at 9. The "20-39" and "60+" groups had 240 and 260 deaths, respectively, peaking in 2021 for the former and 2022 for the latter. The under-20 category had 3 deaths in both 2021 and 2022.
 
-By analyzing sum column in @tbl-gender-organize, we can see a clear trend in 7 years. The death number decreased one year from 2017 to 2018, then quickly increasing from 2018 to 2022 and peaked at 2022, the yearly death observations went over 200, and then started to fall down to under 80 in 2023. 
-
-The timeline in @tbl-gender-organize and @tbl-age-organize overlaps time range of COVID-19. Since age and gender did not seem to influence the death number a lot, We can conjecture that maybe the death of homeless lead by the COVID-19 pandemic. To check our hypothesis, we need to look the statistics of trend of causes of death.
+A seven-year trend from @tbl-gender-organize shows a dip in deaths from 2017 to 2018, a surge through 2022, and a decline to below 80 in 2023. This period coincides with the COVID-19 pandemic, suggesting a potential link to homeless mortality; however, age and gender had minimal impact on death numbers.
 
 ```{r}
 #| label: tbl-cause-organize
@@ -231,13 +213,14 @@ second_half %>%
   kable_styling(latex_options = c("striped")) 
 
 ```
-As indicated by @tbl-cause-organize and @tbl-cause-organize-2, drug toxicity emerged as the predominant cause of death among the homeless, accounting for nearly half of all homeless people. The highest data was recorded in 2021. Within a total of 949 cases, the causes of death for approximately 20%, or 208 individuals, remained unknown. Cardiovascular diseases ranked third with 95 deaths, experiencing a sharp increase to a peak of 22 in 2022, before dramatically dropping to just one in 2023. The least homeless people death were attributed to COVID-19, with only 8 cases, half of which occurred at the pandemic's outset in 2020. Other causes resulted in the deaths of 20 to 60 individuals.
 
-These findings suggest that COVID-19 was not the direct cause of the marked increase in homeless deaths; it may have indirectly influenced death rates through a rise in drug toxicity and cardiovascular disease-related deaths. To evaluate the secondary hypothesis regarding other variables that could affect causes of death, it is necessary to examine the correlations between gender, age, and causes of death through visual analysis.
+Drug toxicity is the leading death cause, as shown in @tbl-cause-organize and @tbl-cause-organize-2, accounting for half of the deaths, peaking in 2021. Unknown causes and cardiovascular diseases followed, the latter spiking to 22 in 2022 and then falling to 1 in 2023. COVID-19 related deaths were the lowest at 8, with half in 2020. Other causes ranged between 20 to 60 deaths.
 
-## Visualization
+The data suggest COVID-19 indirectly influenced mortality through increased drug toxicity and cardiovascular deaths rather than direct impact. Further analysis of the interplay between gender, age, and mortality causes is needed to substantiate secondary hypotheses.
 
-### Visual 1
+# Data Analysis {#sec-ana}
+
+## Analysis on Causes of Death Based on Gender
 
 ```{r}
 #| label: fig-gender-in-deathcauses
@@ -256,13 +239,13 @@ gender_death <- analysis_data %>%
 gender_death
 ```
 
-As depicted in @fig-gender-in-deathcauses, the distribution of the three gender categories across 10 causes of death does not show a distinct pattern. Drug toxicity remains the leading cause for both genders, while COVID-19 has the least impact. For other causes, the ratio of female to male deaths remains at about 1:3, as shown on the @tbl-gender-organize.
+@fig-gender-in-deathcauses illustrates that across ten death causes, gender distribution is fairly consistent, with drug toxicity as the primary cause and COVID-19 the least for all genders. Female deaths are about a third of male deaths, aligning with data from @tbl-gender-organize.
 
-### Visual 2
+## Analysis on Causes of Death Based on Age
 
 ```{r}
 #| label: fig-age-in-deathcauses
-#| fig-cap: Correlation between age group and 10 causes of death
+#| fig-cap: Correlation between age and 10 causes of death
 #| echo: false
 #| warning: false
 #| message: false
@@ -279,18 +262,15 @@ age_death
 
 ```
 
-@fig-age-in-deathcauses presents the relationship between age and causes of death. The under-20 age group is too small for meaningful analysis, and the unknown age group's data is inconclusive due to the absence of identifiable patterns between age and cause of death, with most causes also unidentified. Therefore, the analysis focuses on the age groups 20-39, 40-59, and 60+.
+Age-related death causes, shown in @fig-age-in-deathcauses, indicate that the under-20 group is too small for analysis, and the unknown group lacks clear trends. The focus thus is on the 20-39, 40-59, and 60+ groups. Drug toxicity dominates in the 20-59 brackets, while unspecified causes, cancer, and cardiovascular diseases are more common in the 60+ group, with drug-related deaths less prevalent.
 
-Notably, the distribution of death causes varies significantly across age groups. For those aged 20-39 and 40-59, drug toxicity is the main cause of death. In older age groups, an increased proportion of deaths is attributed to unspecified causes, cancer, and cardiovascular diseases, with the latter being the predominant cause of death among those over 60. The share of drug toxicity-related deaths in this group is less than 25%.
-
-Comparing the correlations between age and cause of death to gender and cause of death, age appears to have a stronger correlation with death causes. Consequently, the analysis has shifted focus to the temporal trends across the three age categories.
 \newpage
 
-### Visual 3
+## Analysis of the Distribution of Causes of Death Across Three Age Groups
 
 ```{r}
 #| label: fig-20-39group-deathcause-change
-#| fig-cap: Correlation between age and 10 causes of death part1
+#| fig-cap: Trends in causes of death among age group "20-39"
 #| echo: false
 #| warning: false
 #| message: false
@@ -319,7 +299,7 @@ above20_time_plot
 
 ```{r}
 #| label: fig-40-59group-deathcause-change
-#| fig-cap: Correlation between age and 10 causes of death part2
+#| fig-cap: Trends in causes of death among age group "40-59"
 #| echo: false
 #| warning: false
 #| message: false
@@ -349,7 +329,7 @@ above40_time_plot
 
 ```{r}
 #| label: fig-60group-deathcause-change
-#| fig-cap: Correlation between age and 10 causes of death part3
+#| fig-cap: Trends in causes of death among age group "60+"
 #| echo: false
 #| warning: false
 #| message: false
@@ -376,17 +356,34 @@ plus60_time_plot <- ggplot(plus60_causes , aes(x = year_of_death, y = deaths, co
 plus60_time_plot
 ```
 
-Both @fig-20-39group-deathcause-change and @fig-40-59group-deathcause-change reveal a striking increase in deaths due to drug toxicity from 2017 to 2021, peaking in that year before declining. The peak figures for drug toxicity are roughly four to five times higher than those for other causes, with about 50 cases in the 20-39 age group and over 60 in the 40-59 age group, while other causes remained below 10 in 2021. A slight difference exists, with the 40-59 age group exhibiting a higher number of unknown causes deaths.
+Age shows a stronger link to death causes than gender, prompting a shift to analyze temporal trends in these age groups. Trends indicate a surge in drug toxicity deaths from 2017 to 2021, especially in the 20-39 and 40-59 groups, with a decline afterward. The 40-59 group also shows a notable number of deaths from unknown causes.
 
-Oppositely, for those aged over 60, on the @fig-60group-deathcause-change, the number of deaths due to drug toxicity and unspecified causes decreased in 2021 but rose again in 2022. Deaths from cancer followed a similar pattern, peaking in 2022, thus forming an "M"-shaped trend. Cardiovascular disease-related deaths continued to rise, with the last count in 2022. Deaths from all other causes did not exceed five.
+For the over-60s, as per @fig-60group-deathcause-change, drug toxicity and unspecified deaths dipped in 2021 but rebounded in 2022, with cancer deaths peaking that year, forming an "M"-shaped trend. Cardiovascular deaths have increased, peaking in 2022, while other causes remain below five.
 
 \newpage
+
 # Conclusion {#sec-conclu}
 
 In conclusion, our data analysis uncovers a distinct trend and points to potential factors behind the increase in drug toxicity-related deaths among Toronto's homeless population from 2017 to 2023. The evidence, drawn from @tbl-gender-organize, @fig-20-39group-deathcause-change, @fig-40-59group-deathcause-change, and @fig-60group-deathcause-change, shows a sharp rise in death among the young and middle-aged homeless segments. In contrast, the older homeless population appears to be less affected by drug-related issues, with cardiovascular disease being their leading cause of mortality. While our data does not provide evidence of the underlying causes of these trends, experts have speculated that the lockdowns may have compelled individuals to use drugs in risker and stranger circumstances, potentially leading to higher death number related to drug toxicity. [@citenews]
 
 
+# Appendix {#sec-app}
 
+We cleaned the data by cancelling the Count	column, which represents the number of deaths in the specified category[@citecot]. For the convenience of counting specific population group, we copied the particular line a couple of times according to the number in the count. And all characters in columns' names were transformed into lowcase.
+
+Here is the sample of cleaned data.
+
+```{r}
+#| label: tbl-glimpse
+#| tbl-cap: Sample of Data
+#| echo: false
+#| warning: false
+#| message: false
+
+sample_data<-head(analysis_data, 10)
+kable(sample_data, format = "latex", booktabs = TRUE)%>%
+  kable_styling(position = 'center')
+```
 
 \newpage
 
